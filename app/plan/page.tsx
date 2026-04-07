@@ -219,11 +219,12 @@ export default function PlanPage() {
   
   const [tripPlan, setTripPlan] = useState<any>(null);
 
-  // 🔥 SKANER UCHUN HOLATLAR
+  // 🔥 SKANER VA SHARE UCHUN HOLATLAR
   const [showScanner, setShowScanner] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [scannedPlace, setScannedPlace] = useState<any>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("hamrohTripData");
@@ -310,7 +311,6 @@ export default function PlanPage() {
     setTripPlan(updatedPlan);
   };
 
-  // 🔥 SKANER FUNKSIYALARI
   const startScan = () => {
     setScanning(true);
     setScannedPlace(null);
@@ -324,6 +324,14 @@ export default function PlanPage() {
   const handleAudioPlay = () => {
     setAudioPlaying(!audioPlaying);
     if (!audioPlaying) alert("Demo: AI tomonidan yaratilgan professional audio-gid (tarix va afsonalar) ishga tushdi!");
+  };
+
+  const handleShare = () => {
+    setIsSharing(true);
+    setTimeout(() => {
+      alert("🌟 Marshrutingiz chiroyli Instagram-story formatiga o'tkazildi va galereyangizga yuklandi!");
+      setIsSharing(false);
+    }, 2500);
   };
 
   if (!formData || !tripPlan) {
@@ -356,7 +364,7 @@ export default function PlanPage() {
         backgroundColor: "#0f172a",
         backgroundImage: "radial-gradient(circle at top right, #1e293b, #0f172a)",
         fontFamily: "sans-serif",
-        padding: "40px 20px",
+        padding: "20px 15px", 
         position: "relative",
         overflow: "hidden",
         color: "white"
@@ -368,49 +376,114 @@ export default function PlanPage() {
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 10 }}>
         
-        {/* Tepadagi Qism */}
-        <div style={{ marginBottom: "30px" }}>
-          <a href="/wizard" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "15px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "8px", transition: "color 0.2s", marginBottom: "16px" }} onMouseOver={(e) => e.currentTarget.style.color = "white"} onMouseOut={(e) => e.currentTarget.style.color = "#94a3b8"}>
-            <span>←</span> So'rovnomaga qaytish
-          </a>
-          <h1 style={{ fontSize: "42px", fontWeight: 800, marginBottom: "10px", letterSpacing: "-1px", textShadow: "0 4px 10px rgba(0,0,0,0.5)" }}>
-            Sizning <span style={{ color: "#38bdf8" }}>sayohatingiz</span>
-          </h1>
-          <p style={{ color: "#94a3b8", fontSize: "18px" }}>
-            {formData.days} kunlik sayohat rejangiz AI tomonidan optimallashtirildi ✨
-          </p>
-        </div>
+        {/* 🔥 YUQORIGA KO'TARILGAN QISM (Sarlavha, Tablar va QR Kod yonma-yon) */}
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: "30px", marginBottom: "30px", marginTop: "20px" }}>
+          
+          {/* Chap qism: Sarlavha va Tablar */}
+          <div style={{ flex: "1 1 500px" }}>
+            <a href="/wizard" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "15px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: "8px", transition: "color 0.2s", marginBottom: "16px" }} onMouseOver={(e) => e.currentTarget.style.color = "white"} onMouseOut={(e) => e.currentTarget.style.color = "#94a3b8"}>
+              <span>←</span> So'rovnomaga qaytish
+            </a>
+            <h1 style={{ fontSize: "36px", fontWeight: 800, marginBottom: "10px", letterSpacing: "-1px", textShadow: "0 4px 10px rgba(0,0,0,0.5)" }}>
+              Sizning <span style={{ color: "#38bdf8" }}>sayohatingiz</span>
+            </h1>
+            <p style={{ color: "#94a3b8", fontSize: "16px", marginBottom: "20px" }}>
+              {formData.days} kunlik sayohat rejangiz AI tomonidan optimallashtirildi ✨
+            </p>
 
-        {/* Tablar (Kunlar) */}
-        <div style={{ display: "flex", gap: "12px", marginBottom: "30px", flexWrap: "wrap" }}>
-          {tripPlan.days.map((day: any, index: number) => (
-            <button
-              key={day.day}
-              onClick={() => setActiveDay(index)}
+            {/* Tablar (Kunlar) */}
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              {tripPlan.days.map((day: any, index: number) => (
+                <button
+                  key={day.day}
+                  onClick={() => setActiveDay(index)}
+                  style={{
+                    padding: "10px 24px",
+                    borderRadius: "16px",
+                    border: activeDay === index ? "1px solid #38bdf8" : "1px solid rgba(255,255,255,0.1)",
+                    background: activeDay === index ? "rgba(56, 189, 248, 0.15)" : "rgba(30, 41, 59, 0.4)",
+                    color: activeDay === index ? "white" : "#94a3b8",
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    backdropFilter: "blur(10px)",
+                    boxShadow: activeDay === index ? "0 0 20px rgba(56, 189, 248, 0.2)" : "none"
+                  }}
+                >
+                  {day.day}-kun
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* O'ng qism: HAMROH PASS WIDGET (QR va Share shu yerga ko'tarildi) */}
+          <div style={{
+            flex: "1 1 350px", maxWidth: "450px",
+            background: "linear-gradient(135deg, #2563eb, #8b5cf6)",
+            borderRadius: "24px",
+            padding: "24px",
+            boxShadow: "0 20px 40px rgba(37, 99, 235, 0.3)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            color: "white",
+            flexWrap: "wrap",
+            gap: "20px",
+            position: "relative",
+            overflow: "hidden"
+          }}>
+            <div style={{ position: "absolute", top: "-50%", left: "-20%", width: "150%", height: "200%", background: "linear-gradient(to bottom right, rgba(255,255,255,0.2), transparent)", transform: "rotate(30deg)", pointerEvents: "none" }}></div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", position: "relative", zIndex: 10, flexWrap: "wrap" }}>
+              <div style={{ background: "white", padding: "8px", borderRadius: "16px", boxShadow: "0 10px 20px rgba(0,0,0,0.2)" }}>
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=HAMROH-PASS-${Math.floor(Math.random() * 10000)}`} 
+                  alt="Hamroh Pass QR" 
+                  style={{ width: "70px", height: "70px", borderRadius: "8px" }}
+                />
+              </div>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "0 0 6px 0", fontSize: "18px", fontWeight: 800 }}>
+                  <span style={{ background: "#ef4444", borderRadius: "6px", padding: "2px 6px", fontSize: "10px", textTransform: "uppercase", letterSpacing: "1px" }}>PRO</span>
+                  Hamroh Pass
+                </div>
+                <p style={{ margin: 0, fontSize: "13px", color: "rgba(255,255,255,0.9)", lineHeight: "1.5", maxWidth: "200px" }}>
+                  Restoranlarda QR ni ko'rsating va <b style={{color: "#fde047", fontSize: "14px"}}>5% chegirma</b> oling!
+                </p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={handleShare}
+              disabled={isSharing}
               style={{
-                padding: "12px 32px",
-                borderRadius: "16px",
-                border: activeDay === index ? "1px solid #38bdf8" : "1px solid rgba(255,255,255,0.1)",
-                background: activeDay === index ? "rgba(56, 189, 248, 0.15)" : "rgba(30, 41, 59, 0.4)",
-                color: activeDay === index ? "white" : "#94a3b8",
-                fontSize: "16px",
-                fontWeight: 700,
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                backdropFilter: "blur(10px)",
-                boxShadow: activeDay === index ? "0 0 20px rgba(56, 189, 248, 0.2)" : "none"
+                padding: "12px 20px",
+                background: isSharing ? "#475569" : "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
+                color: "white",
+                border: "none",
+                borderRadius: "12px",
+                fontWeight: 800,
+                fontSize: "13px",
+                cursor: isSharing ? "wait" : "pointer",
+                boxShadow: isSharing ? "none" : "0 10px 25px rgba(220, 39, 67, 0.4)",
+                transition: "transform 0.2s",
+                position: "relative",
+                zIndex: 10,
+                width: "100%"
               }}
             >
-              {day.day}-kun
+              {isSharing ? "🎨 Rasm chizilmoqda..." : "📸 Storisga ulashish"}
             </button>
-          ))}
+          </div>
         </div>
 
+        {/* ASOSIY GRID: MARSHRUT VA XARITA */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-            gap: "30px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", 
+            gap: "24px",
             alignItems: "start",
           }}
         >
@@ -418,76 +491,76 @@ export default function PlanPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
             <div style={glassCardStyle}>
               
-              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "24px" }}>
-                <h2 style={{ margin: 0, fontSize: "28px", fontWeight: 800 }}>{selectedDay.day}-kun</h2>
-                <div style={{ color: "#38bdf8", fontWeight: 600, fontSize: "16px", background: "rgba(56,189,248,0.1)", padding: "6px 12px", borderRadius: "8px" }}>
-                  📍 {selectedDay.region} hududi
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px", flexWrap: "wrap", gap: "10px" }}>
+                <h2 style={{ margin: 0, fontSize: "24px", fontWeight: 800 }}>{selectedDay.day}-kun</h2>
+                <div style={{ color: "#38bdf8", fontWeight: 600, fontSize: "14px", background: "rgba(56,189,248,0.1)", padding: "6px 12px", borderRadius: "8px" }}>
+                  📍 {selectedDay.region}
                 </div>
               </div>
 
-              {/* MEHMONXONA KARTOCHKASI - RASMSIZ, IXCHAM VARIANT */}
-{selectedDay.hotel && (
-  <div style={{
-    background: "rgba(56, 189, 248, 0.05)", 
-    border: "1px solid rgba(56, 189, 248, 0.2)",
-    borderRadius: "20px",
-    padding: "20px",
-    marginBottom: "32px",
-    display: "flex",
-    gap: "20px",
-    alignItems: "center",
-    backdropFilter: "blur(10px)"
-  }}>
-    {/* Rasm o'rniga chiroyli ikonka va fon */}
-    <div style={{ 
-      width: "60px", 
-      height: "60px", 
-      borderRadius: "14px", 
-      background: "linear-gradient(135deg, #2563eb, #38bdf8)", 
-      display: "flex", 
-      alignItems: "center", 
-      justifyContent: "center", 
-      fontSize: "28px",
-      flexShrink: 0,
-      boxShadow: "0 8px 16px rgba(37, 99, 235, 0.2)"
-    }}>
-      🏨
-    </div>
+              {/* MEHMONXONA KARTOCHKASI */}
+              {selectedDay.hotel && (
+                <div style={{
+                  background: "rgba(56, 189, 248, 0.05)", 
+                  border: "1px solid rgba(56, 189, 248, 0.2)",
+                  borderRadius: "20px",
+                  padding: "16px",
+                  marginBottom: "32px",
+                  display: "flex",
+                  gap: "16px",
+                  alignItems: "center",
+                  flexWrap: "wrap", 
+                  backdropFilter: "blur(10px)"
+                }}>
+                  <div style={{ 
+                    width: "50px", 
+                    height: "50px", 
+                    borderRadius: "14px", 
+                    background: "linear-gradient(135deg, #2563eb, #38bdf8)", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    fontSize: "24px",
+                    flexShrink: 0,
+                    boxShadow: "0 8px 16px rgba(37, 99, 235, 0.2)"
+                  }}>
+                    🏨
+                  </div>
 
-    <div style={{ flex: 1 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
-        <span style={{ fontSize: "12px", color: "#38bdf8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
-          Sizning turar joyingiz
-        </span>
-      </div>
-      <h5 style={{ margin: "0 0 8px 0", fontSize: "18px", fontWeight: 800, color: "white" }}>
-        {selectedDay.hotel.name}
-      </h5>
-      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-        <span style={{ background: "rgba(250, 204, 21, 0.15)", padding: "3px 8px", borderRadius: "6px", fontSize: "12px", fontWeight: 700, color: "#facc15" }}>
-          ⭐ {selectedDay.hotel.rating}
-        </span>
-        <a 
-          href={`https://www.google.com/search?q=${encodeURIComponent(selectedDay.hotel.name + " " + selectedDay.hotel.city + " bog'lanish telefon band qilish")}`} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{ background: "#2563eb", padding: "3px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: 600, color: "white", textDecoration: "none" }}
-        >
-          📞 Band qilish
-        </a>
-        <button
-          onClick={() => handleReplaceHotel(activeDay)}
-          style={{
-            padding: "3px 10px", fontSize: "12px", color: "#f87171", backgroundColor: "rgba(239, 68, 68, 0.1)",
-            border: "1px solid rgba(239, 68, 68, 0.2)", borderRadius: "6px", cursor: "pointer", fontWeight: 600
-          }}
-        >
-          🔄 Almashtirish
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                  <div style={{ flex: 1, minWidth: "150px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+                      <span style={{ fontSize: "11px", color: "#38bdf8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
+                        Turar joyingiz
+                      </span>
+                    </div>
+                    <h5 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: 800, color: "white" }}>
+                      {selectedDay.hotel.name}
+                    </h5>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                      <span style={{ background: "rgba(250, 204, 21, 0.15)", padding: "3px 8px", borderRadius: "6px", fontSize: "12px", fontWeight: 700, color: "#facc15" }}>
+                        ⭐ {selectedDay.hotel.rating}
+                      </span>
+                      <a 
+                        href={`https://www.google.com/search?q=${encodeURIComponent(selectedDay.hotel.name + " " + selectedDay.hotel.city + " bog'lanish telefon band qilish")}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{ background: "#2563eb", padding: "3px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: 600, color: "white", textDecoration: "none" }}
+                      >
+                        📞 Band qilish
+                      </a>
+                      <button
+                        onClick={() => handleReplaceHotel(activeDay)}
+                        style={{
+                          padding: "3px 10px", fontSize: "12px", color: "#f87171", backgroundColor: "rgba(239, 68, 68, 0.1)",
+                          border: "1px solid rgba(239, 68, 68, 0.2)", borderRadius: "6px", cursor: "pointer", fontWeight: 600
+                        }}
+                      >
+                        🔄 Almashtirish
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* TAYMLAYN QISMI */}
               <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -503,20 +576,20 @@ export default function PlanPage() {
                     {/* Nuqta */}
                     <div style={{ position: "absolute", left: "-9px", top: "5px", width: "14px", height: "14px", borderRadius: "50%", background: "#0f172a", border: "3px solid #38bdf8", boxShadow: "0 0 10px #38bdf8" }}></div>
 
-                    <div style={{ color: "#38bdf8", fontWeight: 800, fontSize: "16px", marginBottom: "8px" }}>
+                    <div style={{ color: "#38bdf8", fontWeight: 800, fontSize: "15px", marginBottom: "8px" }}>
                       {planItem.time}
                     </div>
 
-                    <div style={{ fontSize: "22px", fontWeight: 800, color: "white", marginBottom: "8px" }}>
+                    <div style={{ fontSize: "20px", fontWeight: 800, color: "white", marginBottom: "8px" }}>
                       {planItem.item?.name || planItem.title}
                     </div>
 
-                    <div style={{ color: "#94a3b8", fontSize: "15px", lineHeight: "1.6", marginBottom: "12px" }}>
+                    <div style={{ color: "#94a3b8", fontSize: "14px", lineHeight: "1.6", marginBottom: "12px" }}>
                       {planItem.item?.description || planItem.description}
                     </div>
 
                     {planItem.note && (
-                      <div style={{ background: "rgba(56, 189, 248, 0.1)", borderLeft: "3px solid #38bdf8", borderRadius: "0 8px 8px 0", padding: "12px 16px", fontSize: "14px", color: "#e0f2fe", marginBottom: "16px", lineHeight: "1.5" }}>
+                      <div style={{ background: "rgba(56, 189, 248, 0.1)", borderLeft: "3px solid #38bdf8", borderRadius: "0 8px 8px 0", padding: "10px 14px", fontSize: "13px", color: "#e0f2fe", marginBottom: "16px", lineHeight: "1.5" }}>
                         <span style={{marginRight: "6px"}}>💡</span>{planItem.note}
                       </div>
                     )}
@@ -527,9 +600,7 @@ export default function PlanPage() {
                           href={"https://www.google.com/maps/search/?api=1&query=" + planItem.item.lat + "," + planItem.item.lng}
                           target="_blank"
                           rel="noopener noreferrer"
-                          style={{ fontSize: "13px", padding: "8px 14px", backgroundColor: "rgba(16, 185, 129, 0.15)", border: "1px solid rgba(16, 185, 129, 0.3)", borderRadius: "10px", color: "#34d399", fontWeight: 700, textDecoration: "none", transition: "0.2s" }}
-                          onMouseOver={(e)=>e.currentTarget.style.backgroundColor="rgba(16, 185, 129, 0.25)"}
-                          onMouseOut={(e)=>e.currentTarget.style.backgroundColor="rgba(16, 185, 129, 0.15)"}
+                          style={{ fontSize: "12px", padding: "8px 14px", backgroundColor: "rgba(16, 185, 129, 0.15)", border: "1px solid rgba(16, 185, 129, 0.3)", borderRadius: "10px", color: "#34d399", fontWeight: 700, textDecoration: "none", transition: "0.2s" }}
                         >
                           📍 Yo'nalish
                         </a>
@@ -540,9 +611,7 @@ export default function PlanPage() {
                            href={`https://www.google.com/search?q=${encodeURIComponent((planItem.item.name || "") + " restoran " + (planItem.item.city || "") + " telefon")}`}
                            target="_blank"
                            rel="noopener noreferrer"
-                           style={{ fontSize: "13px", padding: "8px 14px", backgroundColor: "rgba(59, 130, 246, 0.15)", border: "1px solid rgba(59, 130, 246, 0.3)", borderRadius: "10px", color: "#60a5fa", fontWeight: 700, textDecoration: "none", transition: "0.2s" }}
-                           onMouseOver={(e)=>e.currentTarget.style.backgroundColor="rgba(59, 130, 246, 0.25)"}
-                           onMouseOut={(e)=>e.currentTarget.style.backgroundColor="rgba(59, 130, 246, 0.15)"}
+                           style={{ fontSize: "12px", padding: "8px 14px", backgroundColor: "rgba(59, 130, 246, 0.15)", border: "1px solid rgba(59, 130, 246, 0.3)", borderRadius: "10px", color: "#60a5fa", fontWeight: 700, textDecoration: "none", transition: "0.2s" }}
                          >
                            📞 Stol band qilish
                          </a>
@@ -551,9 +620,7 @@ export default function PlanPage() {
                       {planItem.item && planItem.item.id !== 9999 && (
                         <button
                           onClick={() => handleReplacePlace(activeDay, index)}
-                          style={{ padding: "8px 14px", fontSize: "13px", color: "#f87171", backgroundColor: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.2)", borderRadius: "10px", cursor: "pointer", fontWeight: 700, transition: "0.2s" }}
-                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.2)"}
-                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.1)"}
+                          style={{ padding: "8px 14px", fontSize: "12px", color: "#f87171", backgroundColor: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.2)", borderRadius: "10px", cursor: "pointer", fontWeight: 700, transition: "0.2s" }}
                         >
                           🔄 Almashtirish
                         </button>
@@ -565,72 +632,10 @@ export default function PlanPage() {
             </div>
           </div>
 
-          {/* O'NG USTUN: QR KOD VA XARITA */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
-            
-            {/* HAMROH PASS WIDGET */}
-            <div style={{
-              background: "linear-gradient(135deg, #2563eb, #8b5cf6)",
-              borderRadius: "24px",
-              padding: "30px",
-              boxShadow: "0 20px 40px rgba(37, 99, 235, 0.3)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              color: "white",
-              flexWrap: "wrap",
-              gap: "24px",
-              position: "relative",
-              overflow: "hidden"
-            }}>
-              {/* Premium Yaltirash */}
-              <div style={{ position: "absolute", top: "-50%", left: "-20%", width: "150%", height: "200%", background: "linear-gradient(to bottom right, rgba(255,255,255,0.2), transparent)", transform: "rotate(30deg)", pointerEvents: "none" }}></div>
-
-              <div style={{ display: "flex", alignItems: "center", gap: "20px", position: "relative", zIndex: 10 }}>
-                <div style={{ background: "white", padding: "10px", borderRadius: "16px", boxShadow: "0 10px 20px rgba(0,0,0,0.2)" }}>
-                  <img 
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=HAMROH-PASS-${Math.floor(Math.random() * 10000)}`} 
-                    alt="Hamroh Pass QR" 
-                    style={{ width: "90px", height: "90px", borderRadius: "8px" }}
-                  />
-                </div>
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "0 0 8px 0", fontSize: "22px", fontWeight: 800 }}>
-                    <span style={{ background: "#ef4444", borderRadius: "6px", padding: "2px 8px", fontSize: "11px", textTransform: "uppercase", letterSpacing: "1px" }}>PRO</span>
-                    Hamroh Pass
-                  </div>
-                  <p style={{ margin: 0, fontSize: "14px", color: "rgba(255,255,255,0.9)", lineHeight: "1.5", maxWidth: "250px" }}>
-                    Restoran va mehmonxonalarda QR-ni ko'rsating va <b style={{color: "#fde047", fontSize: "16px"}}>5% chegirma</b> oling!
-                  </p>
-                </div>
-              </div>
-              
-              <button 
-                onClick={() => alert("Dastur ushbu marshrutning chiroyli rasmini yasab, bevosita Instagram sahifangizga yo'naltiradi! (Demo funksiya)")}
-                style={{
-                  padding: "14px 24px",
-                  background: "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "14px",
-                  fontWeight: 800,
-                  fontSize: "15px",
-                  cursor: "pointer",
-                  boxShadow: "0 10px 25px rgba(220, 39, 67, 0.4)",
-                  transition: "transform 0.2s",
-                  position: "relative",
-                  zIndex: 10
-                }}
-                onMouseOver={(e) => e.currentTarget.style.transform = "translateY(-3px)"}
-                onMouseOut={(e) => e.currentTarget.style.transform = "translateY(0)"}
-              >
-                📸 Storisga ulashish
-              </button>
-            </div>
-
-            {/* MAP WIDGET */}
+          {/* O'NG USTUN: FAQAT XARITA */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
             <div style={{ ...glassCardStyle, padding: "24px" }}>
-              <h2 style={{ marginBottom: "20px", fontSize: "24px", fontWeight: 800 }}>
+              <h2 style={{ marginBottom: "20px", fontSize: "20px", fontWeight: 800 }}>
                 Xarita va marshrut
               </h2>
               <InlineMap points={mapPoints} />
@@ -644,25 +649,22 @@ export default function PlanPage() {
         onClick={() => setShowScanner(true)}
         style={{
           position: "fixed",
-          bottom: "30px",
-          right: "30px",
-          width: "70px",
-          height: "70px",
+          bottom: "20px",
+          right: "20px",
+          width: "60px",
+          height: "60px",
           borderRadius: "50%",
           background: "linear-gradient(135deg, #10b981, #059669)",
           color: "white",
           border: "none",
           boxShadow: "0 15px 35px rgba(16, 185, 129, 0.5)",
-          fontSize: "28px",
+          fontSize: "24px",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           zIndex: 40,
-          transition: "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
         }}
-        onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.15) rotate(-10deg)"}
-        onMouseOut={(e) => e.currentTarget.style.transform = "scale(1) rotate(0deg)"}
       >
         📸
       </button>
@@ -679,53 +681,53 @@ export default function PlanPage() {
           animation: "fadeIn 0.3s ease"
         }}>
           <style>{`@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
-          <button onClick={() => {setShowScanner(false); setScannedPlace(null); setScanning(false);}} style={{ position: "absolute", top: "30px", right: "30px", background: "rgba(255,255,255,0.1)", border: "none", color: "white", fontSize: "20px", width: "44px", height: "44px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s" }} onMouseOver={(e)=>e.currentTarget.style.background="rgba(239,68,68,0.8)"} onMouseOut={(e)=>e.currentTarget.style.background="rgba(255,255,255,0.1)"}>✕</button>
+          <button onClick={() => {setShowScanner(false); setScannedPlace(null); setScanning(false);}} style={{ position: "absolute", top: "20px", right: "20px", background: "rgba(255,255,255,0.1)", border: "none", color: "white", fontSize: "20px", width: "40px", height: "40px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "0.2s" }}>✕</button>
 
           {!scannedPlace ? (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "40px", width: "100%" }}>
-              <h2 style={{ fontSize: "36px", fontWeight: 900, margin: 0, background: "linear-gradient(to right, #38bdf8, #c084fc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", textShadow: "0 10px 30px rgba(56,189,248,0.3)" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "30px", width: "100%" }}>
+              <h2 style={{ fontSize: "28px", fontWeight: 900, margin: 0, background: "linear-gradient(to right, #38bdf8, #c084fc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", textAlign: "center" }}>
                 Tarixni skanerlang
               </h2>
-              <div style={{ position: "relative", width: "320px", height: "320px", background: scanning ? "rgba(30,41,59,0.8)" : "rgba(30,41,59,0.4)", border: scanning ? "none" : "2px dashed #475569", borderRadius: "32px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", boxShadow: scanning ? "0 0 50px rgba(56,189,248,0.2)" : "none", transition: "0.3s" }}>
+              <div style={{ position: "relative", width: "260px", height: "260px", background: scanning ? "rgba(30,41,59,0.8)" : "rgba(30,41,59,0.4)", border: scanning ? "none" : "2px dashed #475569", borderRadius: "32px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", transition: "0.3s" }}>
                 {!scanning ? (
-                  <div style={{ textAlign: "center", color: "#94a3b8", fontSize: "18px", fontWeight: 600 }}>Kamera tayyor</div>
+                  <div style={{ textAlign: "center", color: "#94a3b8", fontSize: "16px", fontWeight: 600 }}>Kamera tayyor</div>
                 ) : (
                   <>
-                    <div style={{ position: "absolute", top: "30px", left: "30px", width: "50px", height: "50px", borderTop: "4px solid #38bdf8", borderLeft: "4px solid #38bdf8", borderRadius: "12px 0 0 0" }}></div>
-                    <div style={{ position: "absolute", top: "30px", right: "30px", width: "50px", height: "50px", borderTop: "4px solid #38bdf8", borderRight: "4px solid #38bdf8", borderRadius: "0 12px 0 0" }}></div>
-                    <div style={{ position: "absolute", bottom: "30px", left: "30px", width: "50px", height: "50px", borderBottom: "4px solid #38bdf8", borderLeft: "4px solid #38bdf8", borderRadius: "0 0 0 12px" }}></div>
-                    <div style={{ position: "absolute", bottom: "30px", right: "30px", width: "50px", height: "50px", borderBottom: "4px solid #38bdf8", borderRight: "4px solid #38bdf8", borderRadius: "0 0 12px 0" }}></div>
+                    <div style={{ position: "absolute", top: "20px", left: "20px", width: "40px", height: "40px", borderTop: "4px solid #38bdf8", borderLeft: "4px solid #38bdf8", borderRadius: "12px 0 0 0" }}></div>
+                    <div style={{ position: "absolute", top: "20px", right: "20px", width: "40px", height: "40px", borderTop: "4px solid #38bdf8", borderRight: "4px solid #38bdf8", borderRadius: "0 12px 0 0" }}></div>
+                    <div style={{ position: "absolute", bottom: "20px", left: "20px", width: "40px", height: "40px", borderBottom: "4px solid #38bdf8", borderLeft: "4px solid #38bdf8", borderRadius: "0 0 0 12px" }}></div>
+                    <div style={{ position: "absolute", bottom: "20px", right: "20px", width: "40px", height: "40px", borderBottom: "4px solid #38bdf8", borderRight: "4px solid #38bdf8", borderRadius: "0 0 12px 0" }}></div>
                     <style>{`@keyframes scan { 0% { top: 10%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 90%; opacity: 0; } }`}</style>
                     <div style={{ position: "absolute", width: "85%", height: "3px", background: "#38bdf8", boxShadow: "0 0 20px 8px rgba(56, 189, 248, 0.6)", animation: "scan 2s infinite cubic-bezier(0.4, 0, 0.2, 1)" }}></div>
                   </>
                 )}
               </div>
-              <button onClick={startScan} disabled={scanning} style={{ padding: "18px 40px", background: scanning ? "#334155" : "linear-gradient(135deg, #2563eb, #4f46e5)", color: "white", border: "none", borderRadius: "16px", fontSize: "18px", fontWeight: 800, cursor: scanning ? "not-allowed" : "pointer", boxShadow: scanning ? "none" : "0 15px 35px rgba(37, 99, 235, 0.4)", transition: "0.3s" }}>
+              <button onClick={startScan} disabled={scanning} style={{ padding: "16px 32px", background: scanning ? "#334155" : "linear-gradient(135deg, #2563eb, #4f46e5)", color: "white", border: "none", borderRadius: "16px", fontSize: "16px", fontWeight: 800, cursor: scanning ? "not-allowed" : "pointer", boxShadow: scanning ? "none" : "0 15px 35px rgba(37, 99, 235, 0.4)", transition: "0.3s" }}>
                 {scanning ? "Qidirilmoqda..." : "Kamerani ishga tushirish"}
               </button>
             </div>
           ) : (
-            <div style={{ width: "100%", maxWidth: "450px", background: "#1e293b", borderRadius: "28px", overflow: "hidden", boxShadow: "0 30px 60px rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.1)" }}>
-              <div style={{ height: "240px", position: "relative" }}>
+            <div style={{ width: "100%", maxWidth: "400px", background: "#1e293b", borderRadius: "24px", overflow: "hidden", boxShadow: "0 30px 60px rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.1)" }}>
+              <div style={{ height: "200px", position: "relative" }}>
                 <img src={scannedPlace.image} alt={scannedPlace.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(15,23,42,1))", padding: "30px 24px 20px" }}>
-                  <h2 style={{ margin: 0, fontSize: "28px", fontWeight: 900, color: "white" }}>{scannedPlace.name}</h2>
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(transparent, rgba(15,23,42,1))", padding: "20px 20px 16px" }}>
+                  <h2 style={{ margin: 0, fontSize: "24px", fontWeight: 900, color: "white" }}>{scannedPlace.name}</h2>
                 </div>
               </div>
-              <div style={{ padding: "28px" }}>
-                <div style={{ background: "#0f172a", borderRadius: "20px", padding: "20px", marginBottom: "24px", border: "1px solid #334155" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                    <div style={{ fontWeight: 800, fontSize: "18px", display: "flex", alignItems: "center", gap: "8px" }}><span>🎧</span> AI Audio-Gid</div>
+              <div style={{ padding: "20px" }}>
+                <div style={{ background: "#0f172a", borderRadius: "16px", padding: "16px", marginBottom: "20px", border: "1px solid #334155" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                    <div style={{ fontWeight: 800, fontSize: "16px", display: "flex", alignItems: "center", gap: "8px" }}><span>🎧</span> AI Audio-Gid</div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                    <button onClick={handleAudioPlay} style={{ width: "50px", height: "50px", borderRadius: "50%", background: "#3b82f6", color: "white", border: "none", cursor: "pointer", fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 20px rgba(59,130,246,0.4)" }}>{audioPlaying ? "⏸" : "▶"}</button>
-                    <div style={{ flex: 1, height: "8px", background: "#334155", borderRadius: "4px", overflow: "hidden" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <button onClick={handleAudioPlay} style={{ width: "40px", height: "40px", borderRadius: "50%", background: "#3b82f6", color: "white", border: "none", cursor: "pointer", fontSize: "16px", display: "flex", alignItems: "center", justifyContent: "center" }}>{audioPlaying ? "⏸" : "▶"}</button>
+                    <div style={{ flex: 1, height: "6px", background: "#334155", borderRadius: "4px", overflow: "hidden" }}>
                       <div style={{ width: audioPlaying ? "40%" : "0%", height: "100%", background: "#38bdf8", transition: "width 1s linear" }}></div>
                     </div>
                   </div>
                 </div>
-                <p style={{ margin: "0 0 24px 0", color: "#cbd5e1", fontSize: "15px", lineHeight: "1.7", fontStyle: "italic", borderLeft: "3px solid #38bdf8", paddingLeft: "16px", background: "rgba(56,189,248,0.05)", padding: "16px", borderRadius: "0 12px 12px 0" }}>"{scannedPlace.aiTip}"</p>
-                <button onClick={() => {setShowScanner(false); alert("Sayyoh endi aynan shu yerdan boshlanadigan yangi rejaga yo'naltiriladi!");}} style={{ width: "100%", padding: "18px", background: "linear-gradient(135deg, #10b981, #059669)", color: "white", border: "none", borderRadius: "16px", fontSize: "18px", fontWeight: 800, cursor: "pointer", boxShadow: "0 15px 30px rgba(16, 185, 129, 0.4)", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+                <p style={{ margin: "0 0 20px 0", color: "#cbd5e1", fontSize: "14px", lineHeight: "1.6", fontStyle: "italic", borderLeft: "3px solid #38bdf8", paddingLeft: "12px", background: "rgba(56,189,248,0.05)", padding: "12px", borderRadius: "0 12px 12px 0" }}>"{scannedPlace.aiTip}"</p>
+                <button onClick={() => {setShowScanner(false); alert("Sayyoh endi aynan shu yerdan boshlanadigan yangi rejaga yo'naltiriladi!");}} style={{ width: "100%", padding: "14px", background: "linear-gradient(135deg, #10b981, #059669)", color: "white", border: "none", borderRadius: "12px", fontSize: "15px", fontWeight: 800, cursor: "pointer" }}>
                   📍 Shu yerdan marshrut tuzish
                 </button>
               </div>
@@ -737,12 +739,11 @@ export default function PlanPage() {
   );
 }
 
-// Glassmorphism Card Style
 const glassCardStyle: React.CSSProperties = {
   background: "rgba(30, 41, 59, 0.6)",
   backdropFilter: "blur(20px)",
   border: "1px solid rgba(255, 255, 255, 0.05)",
   borderRadius: "24px",
-  padding: "32px",
+  padding: "24px",
   boxShadow: "0 25px 50px rgba(0, 0, 0, 0.3)",
 };

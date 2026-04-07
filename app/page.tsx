@@ -4,7 +4,51 @@ import { useState } from "react";
 import Link from "next/link";
 
 export default function Home() {
-  // 🔥 12 TA ETIBORGA LOYIQ JOYLAR RO'YXATI
+  // Ko'p tillilik uchun state va tarjimalar
+  const [lang, setLang] = useState<'uz' | 'qr' | 'en'>('uz');
+
+  const t = {
+    uz: {
+      navPlaces: "Joylar",
+      navAi: "Hamroh AI",
+      hero1: "Sirlarga boy",
+      hero2: "Qoraqalpog'istonni",
+      hero3: "kashf eting",
+      desc: "Orol dengizining fojiasi va tabiat mo'jizasi, qadimiy qal'alar va dunyoga mashhur Savitskiy muzeyi. Hamroh AI yordamida o'z sayohatingizni atigi 1 daqiqada rejalashtiring.",
+      btn: "Sayohatni boshlash ➔",
+      destTitle: "E'tiborga loyiq manzillar",
+      destSub: "Ming yillik tarix va betakror tabiat. Qoraqalpog'istonning eng go'zal va mashhur nuqtalari bilan tanishing.",
+      destBtn: "Barcha joylarni AI orqali kashf etish"
+    },
+    qr: {
+      navPlaces: "Oraylar",
+      navAi: "Hamroh AI",
+      hero1: "Sirlarǵa bay",
+      hero2: "Qaraqalpaqstandı",
+      hero3: "kashf etiń",
+      desc: "Aral teńizi fojiası hám tábiyat kárámatı, áyyemgi qorǵanlar hám dúnyaǵa belgili Savitskiy muzeyi. Hamroh AI járdeminde óz sayaxatıńızdı tek 1 minutta jobalastırıń.",
+      btn: "Sayaxattı baslaw ➔",
+      destTitle: "Itibarǵa ılayıq oraylar",
+      destSub: "Mıń jıllıq tariyx hám tákirarlanbas tábiyat. Qaraqalpaqstannıń eń gózzal hám belgili noqatları menen tanısıń.",
+      destBtn: "Barlıq oraylardı AI arqalı kashf etiw"
+    },
+    en: {
+      navPlaces: "Places",
+      navAi: "Hamroh AI",
+      hero1: "Discover the mysterious",
+      hero2: "Karakalpakstan",
+      hero3: "",
+      desc: "The tragedy of the Aral Sea, ancient fortresses, and the world-famous Savitsky Museum. Plan your trip in just 1 minute with Hamroh AI.",
+      btn: "Start Journey ➔",
+      destTitle: "Top Destinations",
+      destSub: "A millennium of history and unique nature. Discover the most beautiful and famous spots of Karakalpakstan.",
+      destBtn: "Explore all places with AI"
+    }
+  };
+
+  const currentT = t[lang];
+
+  // 12 TA ETIBORGA LOYIQ JOYLAR RO'YXATI
   const destinations = [
     {
       name: "Orol Dengizi Fojiasi",
@@ -80,7 +124,7 @@ export default function Home() {
     }
   ];
 
-  // 🔥 MODAL UCHUN STATE'LAR
+  // MODAL UCHUN STATE'LAR
   const [selectedDest, setSelectedDest] = useState<any>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
 
@@ -94,22 +138,43 @@ export default function Home() {
   return (
     <main style={{ minHeight: "100vh", fontFamily: "sans-serif", color: "#1e293b", backgroundColor: "#f8fafc" }}>
       
-      {/* HEADER (Menyu) */}
-      <header style={{ position: "fixed", top: 0, left: 0, right: 0, padding: "20px 40px", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 100, backgroundColor: "rgba(15, 23, 42, 0.8)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
-        {/* Soya qo'shildi */}
+      {/* HEADER (Menyu) - Mobil moslashuv bilan */}
+      <header style={{ 
+        position: "fixed", top: 0, left: 0, right: 0, 
+        padding: "15px 20px", display: "flex", flexWrap: "wrap", 
+        justifyContent: "space-between", alignItems: "center", gap: "15px",
+        zIndex: 100, backgroundColor: "rgba(15, 23, 42, 0.8)", 
+        backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(255,255,255,0.1)" 
+      }}>
         <div style={{ fontSize: "24px", fontWeight: 800, color: "white", letterSpacing: "-1px", textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>
           Visit<span style={{ color: "#38bdf8" }}>Karakalpakstan</span>
         </div>
-        <div style={{ display: "flex", gap: "30px", fontWeight: 600, fontSize: "15px" }}>
-          {/* Matnlarga soya qo'shildi */}
-          <a href="#destinations" style={{ cursor: "pointer", color: "#cbd5e1", textDecoration: "none", textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>Joylar</a>
-          <span style={{ cursor: "pointer", color: "#38bdf8", borderBottom: "2px solid #38bdf8", paddingBottom: "4px", textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>Hamroh AI</span>
+        
+        <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "20px", fontWeight: 600, fontSize: "15px" }}>
+            <a href="#destinations" style={{ cursor: "pointer", color: "#cbd5e1", textDecoration: "none", textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>{currentT.navPlaces}</a>
+            <span style={{ cursor: "pointer", color: "#38bdf8", borderBottom: "2px solid #38bdf8", paddingBottom: "4px", textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>{currentT.navAi}</span>
+          </div>
+          
+          {/* Til almashtirish tugmalari */}
+          <div style={{ display: "flex", gap: "5px" }}>
+            {['uz', 'qr', 'en'].map(l => (
+              <button key={l} onClick={() => setLang(l as any)} style={{
+                background: lang === l ? "#38bdf8" : "rgba(255,255,255,0.1)",
+                color: "white", border: "none", padding: "6px 10px", borderRadius: "8px", 
+                cursor: "pointer", fontSize: "12px", fontWeight: 700, textTransform: "uppercase",
+                transition: "background 0.2s"
+              }}>
+                {l}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
       {/* 1. HERO SECTION */}
       <div style={{ 
-        paddingTop: "140px", paddingBottom: "80px", paddingLeft: "40px", paddingRight: "40px", 
+        paddingTop: "140px", paddingBottom: "80px", paddingLeft: "20px", paddingRight: "20px", 
         minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
         background: `linear-gradient(to right, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.2) 100%), 
                      url('/creative-karakalpakstan-bg.png') center/cover no-repeat`,
@@ -118,21 +183,21 @@ export default function Home() {
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.4)" }}></div>
 
         <div style={{ maxWidth: "1200px", width: "100%", display: "flex", flexWrap: "wrap", gap: "60px", position: "relative", zIndex: 10 }}>
-          <div style={{ flex: "1 1 600px", color: "white" }}>
+          <div style={{ flex: "1 1 500px", color: "white" }}>
             
-            {/* Rasmiy Turizm Portali (Yorqinlashtirildi va soya qo'shildi) */}
+            {/* Rasmiy Turizm Portali */}
             <div style={{ background: "rgba(56, 189, 248, 0.25)", backdropFilter: "blur(8px)", display: "inline-block", padding: "8px 18px", borderRadius: "20px", fontSize: "14px", fontWeight: 700, marginBottom: "20px", color: "#e0f2fe", border: "1px solid rgba(56, 189, 248, 0.5)", boxShadow: "0 4px 15px rgba(0,0,0,0.3)", textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>
               ✨ Rasmiy Turizm Portali
             </div>
             
-            {/* Asosiy Sarlavha (Kuchli soya qo'shildi) */}
-            <h1 style={{ fontSize: "64px", fontWeight: 900, lineHeight: "1.1", marginBottom: "24px", letterSpacing: "-2px", color: "white", textShadow: "0 4px 12px rgba(0,0,0,0.8), 0 0 40px rgba(56, 189, 248, 0.3)" }}>
-              Sirlarga boy <br/><span style={{ background: "linear-gradient(to right, #38bdf8, #c084fc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.8))" }}>Qoraqalpog'istonni</span> kashf eting
+            {/* Asosiy Sarlavha - Tarjima bilan */}
+            <h1 style={{ fontSize: "clamp(40px, 6vw, 64px)", fontWeight: 900, lineHeight: "1.1", marginBottom: "24px", letterSpacing: "-2px", color: "white", textShadow: "0 4px 12px rgba(0,0,0,0.8), 0 0 40px rgba(56, 189, 248, 0.3)" }}>
+              {currentT.hero1} <br/><span style={{ background: "linear-gradient(to right, #38bdf8, #c084fc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.8))" }}>{currentT.hero2}</span> {currentT.hero3}
             </h1>
             
-            {/* Qo'shimcha matn (Yorqinlashtirildi va soya qo'shildi) */}
-            <p style={{ fontSize: "20px", lineHeight: "1.6", color: "#f1f5f9", fontWeight: 500, marginBottom: "40px", maxWidth: "600px", textShadow: "0 2px 6px rgba(0,0,0,0.9)" }}>
-              Orol dengizining fojiasi va tabiat mo'jizasi, qadimiy qal'alar va dunyoga mashhur Savitskiy muzeyi. <b style={{color: "white"}}>Hamroh AI</b> yordamida o'z sayohatingizni atigi 1 daqiqada rejalashtiring.
+            {/* Qo'shimcha matn - Tarjima bilan */}
+            <p style={{ fontSize: "clamp(16px, 3vw, 20px)", lineHeight: "1.6", color: "#f1f5f9", fontWeight: 500, marginBottom: "40px", maxWidth: "600px", textShadow: "0 2px 6px rgba(0,0,0,0.9)" }}>
+              {currentT.desc}
             </p>
             
             <Link href="/wizard" style={{ textDecoration: "none" }}>
@@ -146,12 +211,12 @@ export default function Home() {
                 onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 15px 35px rgba(37, 99, 235, 0.6), 0 4px 15px rgba(0,0,0,0.5)"; }}
                 onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 10px 25px rgba(37, 99, 235, 0.4), 0 4px 15px rgba(0,0,0,0.5)"; }}
               >
-                Sayohatni boshlash ➔
+                {currentT.btn}
               </button>
             </Link>
 
-            {/* Statistika (Kuchli soya qo'shildi) */}
-            <div style={{ display: "flex", gap: "40px", marginTop: "60px" }}>
+            {/* Statistika - Mobil moslashuv */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "40px", marginTop: "60px" }}>
               <div>
                 <div style={{ fontSize: "36px", fontWeight: 800, color: "white", textShadow: "0 4px 10px rgba(0,0,0,0.8)" }}>50+</div>
                 <div style={{ color: "#cbd5e1", fontSize: "14px", textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>Qadimiy qal'alar</div>
@@ -170,18 +235,19 @@ export default function Home() {
       </div>
 
       {/* 2. ETIBORGA LOYIQ JOYLAR GRID */}
-      <div id="destinations" style={{ padding: "100px 40px", background: "#f8fafc" }}>
+      <div id="destinations" style={{ padding: "100px 20px", background: "#f8fafc" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "60px" }}>
-            <h2 style={{ fontSize: "40px", fontWeight: 800, color: "#0f172a", marginBottom: "16px", letterSpacing: "-1px" }}>
-              E'tiborga loyiq manzillar
+            <h2 style={{ fontSize: "clamp(32px, 5vw, 40px)", fontWeight: 800, color: "#0f172a", marginBottom: "16px", letterSpacing: "-1px" }}>
+              {currentT.destTitle}
             </h2>
             <p style={{ color: "#64748b", fontSize: "18px", maxWidth: "600px", margin: "0 auto" }}>
-              Ming yillik tarix va betakror tabiat. Qoraqalpog'istonning eng go'zal va mashhur nuqtalari bilan tanishing.
+              {currentT.destSub}
             </p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "30px" }}>
+          {/* Grid responsivligi yaxshilandi (300px) */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "30px" }}>
             {destinations.map((dest, idx) => (
               <div 
                 key={idx}
@@ -211,18 +277,17 @@ export default function Home() {
                 onMouseOver={(e) => { e.currentTarget.style.background = "#eff6ff"; }}
                 onMouseOut={(e) => { e.currentTarget.style.background = "transparent"; }}
               >
-                Barcha joylarni AI orqali kashf etish
+                {currentT.destBtn}
               </button>
             </Link>
           </div>
         </div>
       </div>
 
-      {/* FOOTER */}
-      <footer style={{ background: "#0f172a", color: "#94a3b8", padding: "80px 40px 40px" }}>
+      {/* FOOTER - Mobil moslashuv mavjud */}
+      <footer style={{ background: "#0f172a", color: "#94a3b8", padding: "80px 20px 40px" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "50px" }}>
           
-          {/* Chap ustun: Brend va Missiya */}
           <div style={{ flex: "1 1 300px" }}>
             <div style={{ fontSize: "26px", fontWeight: 800, color: "white", marginBottom: "16px", letterSpacing: "-1px" }}>
               Visit<span style={{ color: "#38bdf8" }}>Karakalpakstan</span>
@@ -232,7 +297,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* O'rta ustun: Tezkor Havolalar */}
           <div style={{ flex: "1 1 200px" }}>
             <h3 style={{ color: "white", fontSize: "18px", fontWeight: 700, marginBottom: "24px" }}>Loyiha</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "16px", fontSize: "15px", fontWeight: 500 }}>
@@ -248,39 +312,32 @@ export default function Home() {
             </div>
           </div>
 
-          {/* O'ng ustun: Kontaktlar va Dasturchi */}
           <div style={{ flex: "1 1 300px" }}>
             <h3 style={{ color: "white", fontSize: "18px", fontWeight: 700, marginBottom: "24px" }}>Bog'lanish</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "16px", fontSize: "15px", fontWeight: 500 }}>
-              
               <div style={{ display: "flex", alignItems: "center", gap: "12px", color: "#e2e8f0" }}>
                 <span style={{ fontSize: "20px" }}>👨‍💻</span> <span>Shanlibaev Abdirashid</span>
               </div>
-              
               <a href="tel:+998945945564" style={{ display: "flex", alignItems: "center", gap: "12px", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s ease" }} onMouseOver={(e)=>e.currentTarget.style.color="#38bdf8"} onMouseOut={(e)=>e.currentTarget.style.color="#94a3b8"}>
                 <span style={{ fontSize: "20px" }}>📞</span> <span>+998 94 594 55 64</span>
               </a>
-              
               <a href="mailto:shanlibaevabdirashid@gmail.com" style={{ display: "flex", alignItems: "center", gap: "12px", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s ease" }} onMouseOver={(e)=>e.currentTarget.style.color="#38bdf8"} onMouseOut={(e)=>e.currentTarget.style.color="#94a3b8"}>
                 <span style={{ fontSize: "20px" }}>✉️</span> <span>shanlibaevabdirashid@gmail.com</span>
               </a>
-              
               <a href="https://t.me/shanlibaev" target="_blank" style={{ display: "flex", alignItems: "center", gap: "12px", color: "#94a3b8", textDecoration: "none", transition: "color 0.2s ease" }} onMouseOver={(e)=>e.currentTarget.style.color="#38bdf8"} onMouseOut={(e)=>e.currentTarget.style.color="#94a3b8"}>
                 <span style={{ fontSize: "20px" }}>✈️</span> <span>@shanlibaev</span>
               </a>
-
             </div>
           </div>
         </div>
 
-        {/* Eng pastki qism (Copyright va shartlar) */}
         <div style={{ 
           maxWidth: "1200px", margin: "60px auto 0", paddingTop: "24px", 
           borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", 
           flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "20px", fontSize: "14px" 
         }}>
           <div>© 2026 Hamroh AI jamoasi. Barcha huquqlar himoyalangan.</div>
-          <div style={{ display: "flex", gap: "24px" }}>
+          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
             <span style={{ cursor: "pointer", transition: "color 0.2s ease" }} onMouseOver={(e)=>e.currentTarget.style.color="white"} onMouseOut={(e)=>e.currentTarget.style.color="#94a3b8"}>Maxfiylik siyosati</span>
             <span style={{ cursor: "pointer", transition: "color 0.2s ease" }} onMouseOver={(e)=>e.currentTarget.style.color="white"} onMouseOut={(e)=>e.currentTarget.style.color="#94a3b8"}>Foydalanish shartlari</span>
           </div>
